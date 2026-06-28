@@ -1170,29 +1170,19 @@ function printAttendance(){
   const rec = currentAttRecord();
   const dateStr = fmtDate(ui.attDate);
 
-  const girls = studs.filter(s=>s.sex==='Female').sort((a,b)=>a.last.localeCompare(b.last));
-  const boys  = studs.filter(s=>s.sex==='Male').sort((a,b)=>a.last.localeCompare(b.last));
+  const sorted = [...studs].sort((a,b)=>a.last.localeCompare(b.last)||a.first.localeCompare(b.first));
 
   let counts = {P:0,A:0,L:0,E:0,U:0};
   studs.forEach(s=>{ const v=rec[s.id]||'U'; counts[v]=(counts[v]||0)+1; });
 
-  function rows(list, offset){
-    return list.map((s,i)=>`
-      <tr>
-        <td>${offset+i+1}</td>
-        <td>${escapeHtml(s.last)}, ${escapeHtml(s.first)}</td>
-        <td>${s.lrn||'—'}</td>
-        <td style="text-align:center;">${statusLabel(rec[s.id],'att')}</td>
-      </tr>`).join('');
-  }
-
-  let tableBody = '';
-  if(girls.length){
-    tableBody += `<tr><td colspan="4" class="pr-group-label">♀ GIRLS</td></tr>${rows(girls,0)}`;
-  }
-  if(boys.length){
-    tableBody += `<tr><td colspan="4" class="pr-group-label">♂ BOYS</td></tr>${rows(boys,girls.length)}`;
-  }
+  const tableBody = sorted.map((s,i)=>`
+    <tr>
+      <td>${i+1}</td>
+      <td>${escapeHtml(s.last)}, ${escapeHtml(s.first)}</td>
+      <td>${s.sex==='Female'?'♀':'♂'}</td>
+      <td>${s.lrn||'—'}</td>
+      <td style="text-align:center;">${statusLabel(rec[s.id],'att')}</td>
+    </tr>`).join('');
 
   const summaryHtml = `
     <div class="pr-summary-row">
@@ -1210,7 +1200,7 @@ function printAttendance(){
     <div class="pr-section-badge">${escapeHtml(sec.name)} &nbsp;·&nbsp; ${sec.grade}</div>
     ${summaryHtml}
     <table class="pr-table">
-      <thead><tr><th>#</th><th>Name (Last, First)</th><th>School ID</th><th style="text-align:center;width:100px;">Status</th></tr></thead>
+      <thead><tr><th>#</th><th>Name (Last, First)</th><th>Sex</th><th>School ID</th><th style="text-align:center;width:100px;">Status</th></tr></thead>
       <tbody>${tableBody}</tbody>
     </table>
     ${sigBlock()}`;
@@ -1227,29 +1217,19 @@ function printOutput(){
   const actTitle = rec.title || '(No activity title set)';
   const deadline = rec.deadline ? formatTime(rec.deadline) : '—';
 
-  const girls = studs.filter(s=>s.sex==='Female').sort((a,b)=>a.last.localeCompare(b.last));
-  const boys  = studs.filter(s=>s.sex==='Male').sort((a,b)=>a.last.localeCompare(b.last));
+  const sorted = [...studs].sort((a,b)=>a.last.localeCompare(b.last)||a.first.localeCompare(b.first));
 
   let counts = {P:0,A:0,L:0,E:0,U:0};
   studs.forEach(s=>{ const v=rec.marks[s.id]||'U'; counts[v]=(counts[v]||0)+1; });
 
-  function rows(list, offset){
-    return list.map((s,i)=>`
-      <tr>
-        <td>${offset+i+1}</td>
-        <td>${escapeHtml(s.last)}, ${escapeHtml(s.first)}</td>
-        <td>${s.lrn||'—'}</td>
-        <td style="text-align:center;">${statusLabel(rec.marks[s.id],'output')}</td>
-      </tr>`).join('');
-  }
-
-  let tableBody = '';
-  if(girls.length){
-    tableBody += `<tr><td colspan="4" class="pr-group-label">♀ GIRLS</td></tr>${rows(girls,0)}`;
-  }
-  if(boys.length){
-    tableBody += `<tr><td colspan="4" class="pr-group-label">♂ BOYS</td></tr>${rows(boys,girls.length)}`;
-  }
+  const tableBody = sorted.map((s,i)=>`
+    <tr>
+      <td>${i+1}</td>
+      <td>${escapeHtml(s.last)}, ${escapeHtml(s.first)}</td>
+      <td>${s.sex==='Female'?'♀':'♂'}</td>
+      <td>${s.lrn||'—'}</td>
+      <td style="text-align:center;">${statusLabel(rec.marks[s.id],'output')}</td>
+    </tr>`).join('');
 
   const summaryHtml = `
     <div class="pr-summary-row">
@@ -1270,7 +1250,7 @@ function printOutput(){
     </div>
     ${summaryHtml}
     <table class="pr-table">
-      <thead><tr><th>#</th><th>Name (Last, First)</th><th>School ID</th><th style="text-align:center;width:100px;">Status</th></tr></thead>
+      <thead><tr><th>#</th><th>Name (Last, First)</th><th>Sex</th><th>School ID</th><th style="text-align:center;width:100px;">Status</th></tr></thead>
       <tbody>${tableBody}</tbody>
     </table>
     ${sigBlock()}`;
